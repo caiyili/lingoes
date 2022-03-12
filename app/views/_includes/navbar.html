@@ -1,0 +1,34 @@
+<div class="navbar-inner" style="background: #51596E;">
+    <div class="container-fluid">
+        <a class="brand" href="/" style="font-weight: bolder"><span>Dashboard</span></a>
+
+        <!-- start: Header Menu -->
+        <div class="nav-no-collapse header-nav">
+            <ul class="nav pull-right">
+                <!-- start: User Dropdown -->
+                <li class="dropdown">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="halflings-icon white user"></i>
+                            {{ $username }}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-menu-title">
+                            <span>账号</span>
+                        </li>
+                        <li>
+                            <a href="/dashboard/report/admin"><i class="icon-book"></i> 报表管理</a>
+                        </li>
+                        <li>
+                            <a href="/dashboard/menu/index"><i class="icon-th"></i> 菜单管理</a>
+                        </li>
+                        <li><a href="/default/index/logout"><i class="halflings-icon off"></i> 退出</a></li>
+                    </ul>
+                </li>
+                <!-- end: User Dropdown -->
+            </ul>
+        </div>
+        <!-- end: Header Menu -->
+
+    </div>
+</div>

@@ -1,0 +1,31 @@
+<footer>
+
+    <p>
+        <span style="text-align:left;float:left">&copy; 2020
+            <a href="#" alt="Bootstrap_Metro_Dashboard">Dashboard</a>
+        </span>
+    </p>
+    <script>
+        function clone(value) {
+            if (Array.isArray(value)) {
+                return value.map(clone)
+            } else if (value && typeof value === 'object') {
+                var res = {};
+                for (var key in value) {
+                    res[key] = clone(value[key]);
+                }
+                return res
+            } else {
+                return value
+            }
+        }
+        function formatToDate(std_time) {
+            let d = new Date(std_time);
+            let date =  d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+            return date;
+        }
+    </script>
+
+</footer>
+
+

@@ -1,0 +1,40 @@
+{{ extends file="_layouts/main.html" }}
+
+{{ block name="content" }}
+<div id="app">
+    <query-form :form_data="form_data"> </query-form>
+    <row>
+        <stat-box title="统计数据" class="yellow" number="123" href="/dash"></stat-box>
+    </row>
+    <box title="box">
+        <h1>哈哈哈哈</h1>
+    </box>
+    <chart-box title="echart表"></chart-box>
+</div>
+{{ /block }}
+
+{{ block name="footer-script" append }}
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            form_data: {
+                items: [
+                    {
+                        name: 'date',
+                        type: 'date',
+                        value: moment().format('YYYY-MM-DD'),
+                    },
+                    {
+                        name: 'partner_id',
+                        type: 'text',
+                        value: '',
+                        placeholder: 'partner_id',
+                    },
+                ]
+            }
+        },
+        delimiters: ['${', '}'],
+    });
+</script>
+{{ /block }}

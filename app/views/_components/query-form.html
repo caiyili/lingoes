@@ -1,0 +1,174 @@
+{{ capture name="template" }}
+<i-form inline>
+    <template
+        v-for="(item, index) in form_data.items"
+        :prop="item.name"
+        >
+        <template v-if="item.type === 'date'">
+            <form-item>
+                <date-picker type="date" v-model="item.value" :placeholder="item.placeholder" @on-change="search" :clearable=false> </date-picker>
+            </form-item>
+            <form-item>
+                <button-group >
+                    <i-button @click="pre_day(index)">
+                        <icon type="ios-arrow-back"></icon>
+                        前一天
+                    </i-button>
+                    <i-button @click="next_day(index)">
+                        后一天
+                        <icon type="ios-arrow-forward"></icon>
+                    </i-button>
+                </button-group>
+            </form-item>
+        </template>
+        <template v-else-if="item.type === 'daterange'">
+            <form-item>
+                <date-picker type="daterange" v-model="item.value" :placeholder="item.placeholder" style="width: 220px" @on-change="search" :clearable=false> </date-picker>
+            </form-item>
+        </template>
+        <template v-else-if="item.type === 'select'">
+            <form-item>
+                <i-select v-model="item.value" style="width:100px" @on-change="search">
+                    <i-option v-for="opt in item.options" :value="opt.value" :key="opt.value">${opt.label}</i-option>
+                </i-select>
+            </form-item>
+        </template>
+<!--        select_remote_search 用例参数说明
+            name: "partner_id",                  //本地的 key
+            remote_key: "name",                  //通过本地的 key 得到远程的字段
+                                                //此处使用 partner_id 调用接口得到对应的 name
+            type: "select_remote_search",       //组件类型为 select_remote_search
+            placeholder: "输入账号名称~",         //placeholder
+            value: '',                        //搜索框初始值
+            url: '/default/double_teacher/timeList?need_paging=0',//接口 url
+-->
+        <template v-else-if="item.type === 'select_remote_search'">
+            <form-item>
+                <i-select style="width:200px" v-model="item.value" filterable remote clearable :placeholder="item.placeholder" :remote-method="remoteMethod" :loading="loading1">
+                    <i-option v-for="(option, index) in options" :value="option.value" :key="index">${option.label}</i-option>
+                </i-select>
+            </form-item>
+        </template>
+        <template v-else>
+            <form-item>
+                <i-input type="text" v-model="item.value" :placeholder="item.placeholder" clearable>
+                    <icon v-if="item.icon" type="item.icon" slot="prepend"></icon>
+                    <icon v-else type="ios-person-outline" slot="prepend"></icon>
+                </i-input>
+            </form-item>
+        </template>
+    </template>
+
+    <form-item>
+        <i-button type=primary @click.prevent="search" :loading="loading">
+            <span v-if="loading"> Searching </span>
+            <span v-else >Search </span>
+        </i-button>
+    </form-item>
+</i-form>
+{{ /capture }}
+<script>
+    Vue.component('query-form', {
+        data: function () {
+            return {
+                loading1: false,
+                options: [],
+                remote_search_data: [],
+                search_option: {},
+            }
+        },
+        created(){
+            //先检查一下是否使用了 remote_search,有的话取出 URL
+            var items = this.form_data.items;
+            for (var i=0;i<items.length;i++){
+                if (items[i].type === "select_remote_search"){
+                    //得到相关的数据
+                    var data = {
+                        'url': items[i].url,//目标 url
+                        'key': items[i].name,//本地的 key
+                        'remote_key': items[i].remote_key,//远程的 key
+                        // 例如 partner_id => name，本地的 partner_id 得到远程的 name
+                    };
+                    this.search_option = data;
+                    this.getRemoteData(data);
+                }
+            }
+        },
+        props: ['form_data', 'loading'],
+        delimiters: ['${', '}'],
+        template: '{{ $smarty.capture.template|escape:"javascript" }}',
+        mounted: function () {
+            if (this.form_data.auto_search) {
+                this.search();
+            }
+        },
+        methods: {
+            pre_day: function (index) {
+                this.form_data.items[index].value = moment(this.form_data.items[index].value).subtract(1, 'days').format('YYYY-MM-DD');
+                this.search();
+            },
+            next_day: function (index) {
+                this.form_data.items[index].value = moment(this.form_data.items[index].value).add(1, 'days').format('YYYY-MM-DD');
+                this.search();
+            },
+            search: function () {
+                console.log('search method');
+                var params = {};
+                for (var i = 0; i < this.form_data.items.length; i ++) {
+                    var item = this.form_data.items[i];
+                    if ('date' === item.type) {
+                        item.value = moment(item.value).format('YYYY-MM-DD');
+                    } else if ('daterange' === item.type) {
+                        item.value[0] = item.value[0] ? moment(item.value[0]).format('YYYY-MM-DD') : '';
+                        item.value[1] = item.value[1] ? moment(item.value[1]).format('YYYY-MM-DD') : '';
+                    }
+                    params[item.name] = item.value;
+                }
+                this.$emit('search', params);
+            },
+            //得到 remote_search的 data
+            getRemoteData(data) {
+                let that = this;
+                $.post(data.url)
+                    .done(function (resp) {
+                        if (0 !== resp.code) {
+                            that.$Message.error(resp.msg);
+                        } else {
+                            that.remote_search_data = resp.data.list;
+                        }
+                    });
+            },
+            //select 远程搜索
+            remoteMethod (query) {
+                query = query.trim();
+                console.log(query);
+                if (query !== '') {
+                    this.loading1 = true;
+                    setTimeout(() => {
+                        this.loading1 = false;
+                        const list = this.remote_search_data.map(item => {
+                            return {
+                                value: item[this.search_option.key],
+                                label: item[this.search_option.remote_key]
+                            };
+                        });
+                        let options = [];
+                         for ( var i = 0; i <list.length; i++){
+                             if(list[i].label.indexOf(query) > -1){
+                                options.push(list[i]);
+                            }
+                         }
+                        this.options = options;
+                    }, 200);
+                }else {
+                    this.options = this.remote_search_data.map(item => {
+                            return {
+                                value: item[this.search_option.key],
+                                label: item[this.search_option.remote_key]
+                            };
+                        });
+                }
+            },
+        }
+    });
+</script>

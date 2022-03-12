@@ -1,0 +1,27 @@
+version: '2.2'
+services:
+  php:
+    image: harbor.baijiayun.com/phpweb/dashboard-php7.4-lua/arm64
+    volumes:
+      - .:/webroot/lingoes
+      - ./development/env.local:/webroot/.env
+      - ./development/logs:/apps/logs
+    networks:
+      - lingoes
+    container_name: lingoes.php
+  nginx:
+    image: harbor.baijiayun.com/phpweb/nginx:latest
+    volumes:
+      - .:/webroot/lingoes
+      - ./development/nginx.conf:/etc/nginx/nginx.conf
+      - ./development/logs:/apps/logs
+    networks:
+      - lingoes
+    ports:
+      - 80:80
+    container_name: lingoes.nginx
+
+networks:
+  lingoes:
+    name: lingoes
+

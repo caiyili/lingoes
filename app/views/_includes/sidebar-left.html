@@ -1,0 +1,72 @@
+<div id="sidebar">
+    <i-Menu ref="table" theme="dark" :active-name="active_name" :open-names="open_names" width="99%">
+        <div v-for="(item,subindex) in menu.data" :key="item.id">
+            <!--            有子菜单的-->
+            <div v-if="item.children != undefined">
+                <Submenu :name="item.title">
+                    <template slot="title">
+                        <i :class="item.icon"></i>
+                        ${item.title}
+                    </template>
+                    <div v-for="(child,index) in item.children" :key="child.id">
+                        <a :href="child.href">
+                            <Menu-Item :name="child.title">
+                                <i :class="child.icon"></i>
+                                ${child.title}
+                            </Menu-Item>
+                        </a>
+                    </div>
+                </Submenu>
+            </div>
+            <!--            没有子菜单的-->
+            <div v-if="item.children == undefined">
+                <a :href="item.href">
+                    <Menu-Item :name="item.title">
+                        <i :class="item.icon"></i>
+                        ${item.title}
+                    </Menu-Item>
+                </a>
+            </div>
+        </div>
+    </i-Menu>
+</div>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#sidebar',
+        data: {
+            menu: {
+                data: [],
+            },
+            open_names: [],
+            active_name: '',
+        },
+        created: function () {
+            this.init_menu();
+        },
+        methods: {
+            init_menu() {
+                let current_url = location.href.split('.com')[1] || '';
+                let params = {
+                    'current_url': current_url
+                };
+                let me = this;
+                let callback = function (resp) {
+                    console.log(resp);
+                    if (0 !== resp.code) {
+                        me.$Message.error(resp.msg);
+                    } else {
+                        me.menu.data = resp.data.menuList;
+                        me.open_names = resp.data.open_names;
+                        me.active_name = resp.data.active_name;
+                        me.$nextTick(() => {
+                            me.$refs.table.updateOpened();
+                            me.$refs.table.updateActiveName();
+                        })
+                    }
+                };
+                $.post('/dashboard/menu/list', params, callback, 'json');
+            },
+        },
+        delimiters: ['${', '}']
+    });
+</script>

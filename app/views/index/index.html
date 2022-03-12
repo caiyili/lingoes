@@ -1,0 +1,163 @@
+{{ extends file="../_layouts/main.html" }}
+
+{{ block name=title append }}
+    - 总览
+{{ /block }}
+
+{{ block name="header-script" append }}
+{{ /block }}
+
+
+{{ block name=content }}
+<div id="app" class="row-fluid" v-cloak>
+    <box title="昨日数据" class="yellow">
+        <i class="halflings-icon eye-open" slot="icon"></i>
+        <row>
+            <stat-box :stat_data="total_stat.week_peak_user" :number="total_stat.total_peak_user" title="直播最高并发量" href="/dashboard/live/peak" class="purple"></stat-box>
+            <stat-box :stat_data="total_stat.week_user_count" :number="total_stat.total_user_count" title="直播总用户数" href="/dashboard/live/user" class="green"></stat-box>
+            <stat-box :stat_data="total_stat.week_flow" :number="total_stat.total_flow" title="点播总流量(G)" href="/dashboard/video/flow" class="greenLight"></stat-box>
+            <stat-box :stat_data="total_stat.week_play_count" :number="total_stat.total_play_count" title="点播总播放次数" href="/dashboard/video/playcount" class="yellow"></stat-box>
+        </row>
+    </box>
+    <row>
+        <chart-box title="今日并发量" id="today-peak" :chart_data="today_peak_chart"></chart-box>
+    </row>
+    <row>
+        <chart-box title="今日教室数和并发量" id="today-room" :chart_data="today_room_chart"></chart-box>
+    </row>
+    <row>
+        <box :title="current_peak_user.title">
+            <data-table :schema="current_peak_user.schema" :data="current_peak_user.data"></data-table>
+            <spin size="large" fix v-if="current_peak_user_spin"></spin>
+        </box>
+    </row>
+    <row>
+        <box :title="current_peak_room.title">
+            <data-table :schema="current_peak_room.schema" :data="current_peak_room.data"></data-table>
+            <spin size="large" fix v-if="current_peak_room_spin"></spin>
+        </box>
+    </row>
+</div>
+{{ /block }}
+
+{{ block name="footer-script" append }}
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            today_peak_chart: null,
+            today_room_chart: null,
+            total_stat: {
+                total_peak_user: '',
+                total_user_count: '',
+                total_flow: '',
+                total_play_count: '',
+            },
+            active_room: {
+                schema: [
+                    '教室ID', 'partner_id', '并发人数',
+                ],
+                data: []
+            },
+            current_peak_user: {
+                title: '当前 top20 并发的【产品线】',
+                schema: [
+                    '产品线(partner_id)','super_partner_id', '公司（联系人）','并发量'
+                ],
+                data: [
+                ],
+            },
+            current_peak_user_spin: true,
+            current_peak_room: {
+                title: '当前 top20 并发的【直播间】',
+                schema: [
+                    'room_id', '公司（联系人）','并发量'
+                ],
+                data: [
+                ],
+            },
+            current_peak_room_spin: true,
+        },
+        mounted: function () {
+            this.get_today_peak_user();
+            this.get_current_peak_user();
+            this.get_current_peak_room();
+        },
+        methods: {
+            get_today_peak_user: function () {
+                var me = this;
+                var today = moment().format('YYYY-MM-DD');
+                //昨天统计数据
+                $.post('/dashboard/index/getWeekData')
+                .done(function (resp) {
+                    if (0 === resp.code) {
+                        me.total_stat = resp.data;
+                    } else {
+                        me.$Message.error(resp.msg);
+                    }
+                });
+                //今日并发量图
+                $.post('/dashboard/live/getDayPeakUser', { date: today })
+                .done(function (resp) {
+                    if (0 === resp.code) {
+                        me.today_peak_chart = resp.data.chart;
+                    } else {
+                        me.$Message.error(resp.msg);
+                    }
+                });
+                //今日教室数和并发量图
+                $.post('/dashboard/live/getDayRoomCount', {})
+                .done(function (resp) {
+                    if (0 === resp.code) {
+                        me.today_room_chart = resp.data.chart;
+                    } else {
+                        me.$Message.error(resp.msg);
+                    }
+                });
+                //活跃教室
+                $.post('/dashboard/live/getCurrentActiveRoom')
+                .done(function(resp) {
+                    if (0 === resp.code) {
+                        me.active_room = resp.data;
+                    } else {
+                        me.$Message.error(resp.msg || '请求出错')
+                    }
+                });
+            },
+            get_current_peak_user(){
+                var that = this;
+                $.post('/dashboard/live/getCurrentPeakPartner')
+                .done(function (resp) {
+                    if (0 === resp.code) {
+                        that.current_peak_user_spin = false;
+                        that.current_peak_user.data = resp.data.list.map(item =>{
+                            return [item.partner_id,item.partner_info.super_partner_id, `${item.partner_info.company} (${item.partner_info.contacts})`, item.peak_user];
+                        });
+                        that.current_peak_user.title += `  共 ${resp.data.total} 条数据`;
+                    } else {
+                        that.current_peak_user_spin = false;
+                        that.$Message.error(resp.msg);
+                    }
+                });
+            },
+            get_current_peak_room(){
+                var that = this;
+                $.post('/dashboard/live/getCurrentPeakRoom')
+                .done(function (resp) {
+                    if (0 === resp.code) {
+                        that.current_peak_room_spin = false;
+                        that.current_peak_room.data = resp.data.list.map(item =>{
+                            return [item.room_id, `${item.partner_info.company} (${item.partner_info.contacts})`, item.peak_user];
+                        });
+                        that.current_peak_room.title += `  共 ${resp.data.total} 条数据`;
+                    } else {
+                        that.current_peak_room_spin = false;
+                        that.$Message.error(resp.msg);
+                    }
+                });
+            },
+        },
+        delimiters: ['${', '}']
+    });
+</script>
+{{ /block }}
