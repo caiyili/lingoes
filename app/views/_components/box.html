@@ -1,11 +1,11 @@
-{{ capture name="template" }}
+${ capture name="template" }$
 <div class="box">
     <div class="box-header">
         <h2>
             <slot name="icon">
                 <i class="halflings-icon list-alt" slot="icon"></i>
             </slot>
-            <span class="break"></span>${title}
+            <span class="break"></span>{{title}}
         </h2>
         <div class="box-icon">
             <slot name="action"></slot>
@@ -17,7 +17,7 @@
         <slot></slot>
     </div>
 </div>
-{{ /capture }}
+${ /capture }$
 
 <script type="text/javascript">
     Vue.component('box', {
@@ -26,7 +26,6 @@
             }
         },
         props: ['title',],
-        template: "{{ $smarty.capture.template|escape:'javascript' }}",
-        delimiters: ['${', '}'],
+        template: "${ $smarty.capture.template|escape:'javascript' }$",
     });
 </script>

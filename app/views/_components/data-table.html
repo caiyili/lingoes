@@ -1,17 +1,17 @@
-{{ capture name="template" }}
+${ capture name="template" }$
 <div style="text-align: center">
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th v-for="item in schema">
-                    ${item}
+                    {{item}}
                 </th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="row in data">
                 <td v-for="val in row">
-                    ${val}
+                    {{val}}
                 </td>
             </tr>
         </tbody>
@@ -20,7 +20,7 @@
 <!--    回调事件 change_page(返回当前页数),change_page_size(返回一页多少条数据)-->
     <Page :page-size-opts="page_size_opts" :total="total" show-sizer v-if="pagination" @on-change="change_page" @on-page-size-change="change_page_size"/>
 </div>
-{{ /capture }}
+${ /capture }$
 
 <script type="text/javascript">
     Vue.component('data-table', {
@@ -32,8 +32,7 @@
             console.log(this.page_size_opts);
         },
         props: ['schema', 'data','loading','pagination','total','page_size_opts'],
-        template: "{{ $smarty.capture.template|escape:'javascript' }}",
-        delimiters: ['${', '}'],
+        template: "${ $smarty.capture.template|escape:'javascript' }$",
         methods:{
             change_page(page){
                 this.$emit('change_page',page);

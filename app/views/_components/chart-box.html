@@ -1,9 +1,9 @@
-{{ capture name="template" }}
+${ capture name="template" }$
 <box :title="title">
     <div ref="chart" class="center" style="height:350px;" ></div>
     <spin size="large" fix v-if="spin_show"></spin>
 </box>
-{{ /capture }}
+${ /capture }$
 <script type="text/javascript">
     Vue.component('chart-box', {
         data: function () {
@@ -14,8 +14,7 @@
         computed: {
         },
         props: ['chart_data', 'title', 'spin_show'],
-        template: "{{ $smarty.capture.template|escape:'javascript' }}",
-        delimiters: ['${', '}'],
+        template: "${ $smarty.capture.template|escape:'javascript' }$",
         watch: {
             chart_data: function (value, old_value) {
                 this.chart.clear();

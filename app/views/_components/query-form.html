@@ -1,4 +1,4 @@
-{{ capture name="template" }}
+${ capture name="template" }$
 <i-form inline>
     <template
         v-for="(item, index) in form_data.items"
@@ -29,7 +29,7 @@
         <template v-else-if="item.type === 'select'">
             <form-item>
                 <i-select v-model="item.value" style="width:100px" @on-change="search">
-                    <i-option v-for="opt in item.options" :value="opt.value" :key="opt.value">${opt.label}</i-option>
+                    <i-option v-for="opt in item.options" :value="opt.value" :key="opt.value">{{opt.label}}</i-option>
                 </i-select>
             </form-item>
         </template>
@@ -45,7 +45,7 @@
         <template v-else-if="item.type === 'select_remote_search'">
             <form-item>
                 <i-select style="width:200px" v-model="item.value" filterable remote clearable :placeholder="item.placeholder" :remote-method="remoteMethod" :loading="loading1">
-                    <i-option v-for="(option, index) in options" :value="option.value" :key="index">${option.label}</i-option>
+                    <i-option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</i-option>
                 </i-select>
             </form-item>
         </template>
@@ -66,7 +66,7 @@
         </i-button>
     </form-item>
 </i-form>
-{{ /capture }}
+${ /capture }$
 <script>
     Vue.component('query-form', {
         data: function () {
@@ -95,8 +95,7 @@
             }
         },
         props: ['form_data', 'loading'],
-        delimiters: ['${', '}'],
-        template: '{{ $smarty.capture.template|escape:"javascript" }}',
+        template: '${ $smarty.capture.template|escape:"javascript" }$',
         mounted: function () {
             if (this.form_data.auto_search) {
                 this.search();

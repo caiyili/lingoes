@@ -1,24 +1,15 @@
-{{ extends file="../_layouts/main.html" }}
+${ extends file="../_layouts/main.html" }$
 
-{{ block name=title append }}
+${ block name=title append }$
     - 总览
-{{ /block }}
+${ /block }$
 
-{{ block name="header-script" append }}
-{{ /block }}
+${ block name="header-script" append }$
+${ /block }$
 
 
-{{ block name=content }}
+${ block name=content }$
 <div id="app" class="row-fluid" v-cloak>
-    <box title="昨日数据" class="yellow">
-        <i class="halflings-icon eye-open" slot="icon"></i>
-        <row>
-            <stat-box :stat_data="total_stat.week_peak_user" :number="total_stat.total_peak_user" title="直播最高并发量" href="/dashboard/live/peak" class="purple"></stat-box>
-            <stat-box :stat_data="total_stat.week_user_count" :number="total_stat.total_user_count" title="直播总用户数" href="/dashboard/live/user" class="green"></stat-box>
-            <stat-box :stat_data="total_stat.week_flow" :number="total_stat.total_flow" title="点播总流量(G)" href="/dashboard/video/flow" class="greenLight"></stat-box>
-            <stat-box :stat_data="total_stat.week_play_count" :number="total_stat.total_play_count" title="点播总播放次数" href="/dashboard/video/playcount" class="yellow"></stat-box>
-        </row>
-    </box>
     <row>
         <chart-box title="今日并发量" id="today-peak" :chart_data="today_peak_chart"></chart-box>
     </row>
@@ -38,9 +29,9 @@
         </box>
     </row>
 </div>
-{{ /block }}
+${ /block }$
 
-{{ block name="footer-script" append }}
+${ block name="footer-script" append }$
 <script type="text/javascript">
     var vm = new Vue({
         el: '#app',
@@ -160,4 +151,4 @@
         delimiters: ['${', '}']
     });
 </script>
-{{ /block }}
+${ /block }$

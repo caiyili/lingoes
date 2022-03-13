@@ -1,14 +1,14 @@
-{{ capture name="template" }}
+${ capture name="template" }$
 <div ref="topbox" class="span3 statbox" onTablet="span6" onDesktop="span3" v-cloak>
     <div ref="tooltip" class="boxchart-tooltip"></div>
     <div ref="boxchart" class="boxchart"></div>
-    <div class="number">${number}</div>
-    <div class="title">${title}</div>
+    <div class="number">{{number}}</div>
+    <div class="title">{{title}}</div>
     <div class="footer">
         <a :href="href">查看详情</a>
     </div>  
 </div>
-{{ /capture }}
+${ /capture }$
 <script type="text/javascript">
     Vue.component('stat-box', {
         data: function () {
@@ -19,8 +19,7 @@
         computed: {
         },
         props: ['stat_data', 'number', 'title', 'href'],
-        template: "{{ $smarty.capture.template|escape:'javascript' }}",
-        delimiters: ['${', '}'],
+        template: "${ $smarty.capture.template|escape:'javascript' }$",
         watch: {
             stat_data: function (value, old_value) {
                 console.log("stat_data change to ");

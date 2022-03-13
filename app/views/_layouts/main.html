@@ -1,41 +1,40 @@
-{{ extends file="_layouts/base.html" }}
+${ extends file="_layouts/base.html" }$
 
-{{ block name=head }}
-    {{ include file="_includes/head.html" }}
-{{ /block }}
+${ block name=head }$
+    ${ include file="_includes/head.html" }$
+${ /block }$
 
-{{ block name=body }}
+${ block name=body }$
     <div class="navbar">
-        {{ *  顶部的导航条  * }}
-        {{ include file="_includes/navbar.html" username=$user_info.name }}
+        ${ *  顶部的导航条  * }$
+        ${ include file="_includes/navbar.html" username=$user_info.name }$
     </div>
     <div class="container-fluid-full">
         <div class="row-fluid">
             <div id="sidebar-left" class="span2" style="background: #51596E;">
-                {{ *  左侧导航栏  * }}
-                {{ block name="sidebar-left" }}
-                    {{ include file="_includes/sidebar-left.html" menu=$menu }}
-                {{ /block }}
+                ${ *  左侧导航栏  * }$
+                ${ block name="sidebar-left" }$
+                    ${ include file="_includes/sidebar-left.html" menu=$menu }$
+                ${ /block }$
             </div>
             <div id="content" class="span10">
-                {{ *  主内容区  * }}
-                {{ block name=content }}
-                    {{ include file="_includes/box.html " }}
-                {{ /block }}
+                ${ *  主内容区  * }$
+                ${ block name=content }$
+                    ${ include file="_includes/box.html " }$
+                ${ /block }$
             </div>
         </div>
     </div>
     <div class="clearfix"></div>
-    {{ *  footer  * }}
-    {{ include file="_includes/footer.html" }}
+    ${ *  footer  * }$
+    ${ include file="_includes/footer.html" }$
 
-    {{ block name="footer-script" }}
-        {{ include file="_components/query-form.html" }}
-        {{ include file="_components/report-query-form.html" }}
-        {{ include file="_components/box.html" }}
-        {{ include file="_components/chart-box.html" }}
-        {{ include file="_components/stat-box.html" }}
-        {{ include file="_components/data-table.html" }}
+    ${ block name="footer-script" }$
+        ${ include file="_components/query-form.html" }$
+        ${ include file="_components/box.html" }$
+        ${ include file="_components/chart-box.html" }$
+        ${ include file="_components/stat-box.html" }$
+        ${ include file="_components/data-table.html" }$
         <script src="/dashboard/js/asset/main.js"></script>
-    {{ /block }}
-{{ /block }}
+    ${ /block }$
+${ /block }$

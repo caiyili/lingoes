@@ -1,6 +1,6 @@
-{{ extends file="_layouts/main.html" }}
+${ extends file="_layouts/main.html" }$
 
-{{ block name="content" }}
+${ block name="content" }$
 <div id="app">
     <query-form :form_data="form_data"> </query-form>
     <row>
@@ -11,9 +11,9 @@
     </box>
     <chart-box title="echart表"></chart-box>
 </div>
-{{ /block }}
+${ /block }$
 
-{{ block name="footer-script" append }}
+${ block name="footer-script" append }$
 <script>
     var vm = new Vue({
         el: '#app',
@@ -37,4 +37,4 @@
         delimiters: ['${', '}'],
     });
 </script>
-{{ /block }}
+${ /block }$
